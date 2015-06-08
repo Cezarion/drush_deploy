@@ -7,6 +7,7 @@ class Deploy extends \Drush\Command {
   public $deploy_via;
   public $deploy_to;
   public $docroot;
+  public $deploy_root;
   public $revision;
   public $maintenance_basename;
   public $real_revision;
@@ -48,9 +49,9 @@ class Deploy extends \Drush\Command {
 
     $this->git = new Git($this);
     $this->deploy_via = drush_get_option('deploy-via', 'Checkout');
+    $this->deploy_root = drush_get_option('deploy-root', '~/deploy/') ;
 
-    $this->deploy_to = drush_get_option('deploy-to', "~/deploy/" . $this->application);
-
+    $this->deploy_to = drush_get_option('deploy-to', $this->deploy_root."/" . $this->application);
     $this->docroot = drush_get_option('docroot', NULL);
     $this->revision = drush_get_option('branch', 'HEAD');
 
@@ -227,7 +228,9 @@ class Deploy extends \Drush\Command {
 
     if (!is_null($hostname)) {
       $cmd = "ssh " . $ssh_options . " " . $username . $hostname . " " . drush_escapeshellarg($command, "LOCAL") . ' 2>&1';
+      return $cmd;
     }
+    $cmd = drush_escapeshellarg($command, "LOCAL");
     return $cmd;
   }
 
